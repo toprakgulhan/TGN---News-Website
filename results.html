@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Sonuçlar{% endblock %}
+{% block content %}
+<h2>Bulunan Haberler</h2>
+<a href="/" class="btn btn-secondary mb-3">Yeni Arama</a>
+{% for item in results %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5>{{ item.title }}</h5>
+            <small><strong>{{ item.source }}</strong> - {{ item.date }}</small>
+            <p>{{ item.translated[:500] }}...</p>
+            <a href="{{ url_for('view_article', article_id=loop.index0, page=page, keywords=keywords, from_date=from_date, to_date=to_date, source=source) }}" class="btn btn-sm btn-success">
+                Görüntüle
+            </a>
+            <a href="{{ item.url }}" target="_blank" class="btn btn-sm btn-primary ms-2">Haber kaynağına git</a>
+        </div>
+    </div>
+{% endfor %}
+
+{% if results %}
+    {% if keywords or from_date or to_date or source %}
+    <form method="get" action="{{ url_for('index') }}" class="text-center mb-4">
+        <input type="hidden" name="page" value="{{ page + 1 }}">
+        <input type="hidden" name="keywords" value="{{ keywords }}">
+        <input type="hidden" name="from_date" value="{{ from_date }}">
+        <input type="hidden" name="to_date" value="{{ to_date }}">
+        <input type="hidden" name="source" value="{{ source }}">
+        <input type="hidden" name="load_more" value="1">
+        <button type="submit" class="btn btn-outline-primary btn-lg">
+            Daha fazla yükle
+        </button>
+    </form>
+    {% endif %}
+    {% if results|length < per_page %}
+        <div class="alert alert-warning text-center" role="alert">
+            Gösterilecek başka haber yok.
+        </div>
+    {% endif %}
+
+    <nav aria-label="Sayfalar" class="d-flex justify-content-center">
+      <ul class="pagination">
+        {% if page > 1 %}
+          <li class="page-item">
+            <a class="page-link" href="{{ url_for('index', page=page-1, keywords=keywords, from_date=from_date, to_date=to_date, source=source) }}">Önceki</a>
+          </li>
+        {% endif %}
+        {% for p in range(1, page+1) %}
+          <li class="page-item {% if p == page %}active{% endif %}">
+            <a class="page-link" href="{{ url_for('index', page=p, keywords=keywords, from_date=from_date, to_date=to_date, source=source) }}">{{ p }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </nav>
+{% else %}
+    <p>No articles found.</p>
+{% endif %}
+
+<div id="loading-overlay" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(255,255,255,0.8);z-index:9999;text-align:center;">
+  <div style="position:relative;top:40vh;font-size:2em;">Yükleniyor...</div>
+</div>
+
+<script src="{{ url_for('static', filename='bts.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var form = document.querySelector('form');
+  if (form) {
+    form.addEventListener('submit', function() {
+      document.getElementById('loading-overlay').style.display = 'block';
+    });
+  }
+});
+</script>
+{% endblock %}

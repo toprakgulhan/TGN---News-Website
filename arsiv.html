@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Arşiv{% endblock %}
+{% block content %}
+<div class="container mt-4" style="max-width:900px;">
+    <h2 class="mb-4">Arşivim</h2>
+    {% if news_list %}
+    <div class="row g-4">
+        {% for title, content, saved_at in news_list %}
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body d-flex flex-column">
+                    <a href="{{ url_for('arsiv_view', news_id=loop.index0) }}" class="card-title h5 mb-2" style="font-weight:600; color:#1a1a1a;">{{ title }}</a>
+                    <div class="card-text mb-2" style="color:#444; max-height: 4.5em; overflow: hidden; text-overflow: ellipsis;">
+                        {{ content[:200] }}{% if content|length > 200 %}...{% endif %}
+                    </div>
+                    <div class="mt-auto text-muted" style="font-size:0.95em;">{{ saved_at }}</div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <div class="alert alert-info">Henüz arşivinizde haber yok.</div>
+    {% endif %}
+</div>
+{% endblock %}

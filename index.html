@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Haber Ara{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h2>Türkiye Haberler Arama</h2>
+    <form method="POST">
+        <input name="keywords" class="form-control" placeholder="Ek anahtar kelimeler"><br>
+        <input name="from_date" type="date" class="form-control"><br>
+        <input name="to_date" type="date" class="form-control"><br>
+        <input name="source" class="form-control" placeholder="Kaynak (örn: bbc-news)"><br>
+        <button type="submit" class="btn btn-primary">Ara</button>
+    </form>
+    <div id="loading-overlay" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(255,255,255,0.8);z-index:9999;text-align:center;">
+      <div style="position:relative;top:40vh;font-size:2em;">Yükleniyor...</div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var form = document.querySelector('form');
+  if (form) {
+    form.addEventListener('submit', function() {
+      document.getElementById('loading-overlay').style.display = 'block';
+    });
+  }
+});
+</script>
+{% endblock %}

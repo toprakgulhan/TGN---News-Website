@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Hesap Bilgileri{% endblock %}
+{% block content %}
+<div class="container mt-5" style="max-width:400px;">
+    <h2 class="mb-4">Hesap Bilgileri</h2>
+    <div class="card">
+        <div class="card-body">
+            <p><strong>E-posta:</strong> {{ user[0] }}</p>
+            <p><strong>Ad:</strong> {{ user[1] }}</p>
+            <p><strong>Soyad:</strong> {{ user[2] }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

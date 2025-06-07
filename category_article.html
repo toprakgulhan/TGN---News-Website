@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}{{ article.title }}{% endblock %}
+{% block content %}
+<div class="container mt-4" style="max-width:900px;">
+    <a href="{{ back }}" class="btn btn-secondary mb-3">&larr; Geri Dön</a>
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="card-title mb-3">{{ article.title }}</h2>
+                    <div class="mb-2 text-muted" style="font-size:1em;">
+                        <span>{{ article.source }}</span> | <span>{{ article.date }}</span>
+                    </div>
+                    <div class="mb-4 article-content" style="white-space:pre-line;">{{ article.description }}</div>
+                    {% if session.email %}
+                    <!-- Arşive Ekle button (form) -->
+                    <form method="post" action="">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-bookmark-plus"></i> Arşive Ekle
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mt-4 mt-lg-0">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="mb-3" style="font-weight:700;">Bunlara da göz atın</h5>
+                    <ul class="list-unstyled">
+                        {% for news in sidebar_news %}
+                        <li class="mb-3">
+                            <a href="{{ url_for('view_category_article', category=category, article_id=news.id) }}" style="font-weight:600; color:#0a2342; text-decoration:none;">
+                                {{ news.title }}
+                            </a>
+                            <div class="text-muted" style="font-size:0.95em;">{{ news.date }}</div>
+                        </li>
+                        {% endfor %}
+                        {% if sidebar_news|length == 0 %}
+                        <li class="text-muted">Başka haber bulunamadı.</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="mb-3" style="font-weight:700;">İlginizi Çekebilir</h5>
+                    <ul class="list-unstyled">
+                        {% for topic in related_topics %}
+                        <li class="mb-2">
+                            <a href="{{ topic.url }}" style="color:#0a2342; text-decoration:none;">
+                                {{ topic.title }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                        {% if related_topics|length == 0 %}
+                        <li class="text-muted">İlgili konu bulunamadı.</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

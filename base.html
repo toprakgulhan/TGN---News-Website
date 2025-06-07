@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}TGN Haber{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Roboto:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            font-family: 'Cinzel', serif !important;
+        }
+        .article-content, .card-text, .mb-4[style*="white-space:pre-line;"] {
+            font-family: 'Roboto', Arial, Helvetica, sans-serif !important;
+            font-size: 1.05rem;
+            font-weight: 400;
+        }
+        .tgn-topnav-links {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+        }
+        .tgn-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.2rem 2rem 1.2rem 1.2rem;
+            border-bottom: 1px solid #ececec;
+            background: #0a2342; /* navy blue */
+            height: 70px;
+            box-sizing: border-box;
+        }
+        .tgn-logo {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            color: #fff;
+            margin-left: 1rem;
+        }
+        .tgn-topnav-link {
+            font-size: 1rem;
+            padding: 0.35rem 0.7rem;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 0.4rem;
+            transition: background 0.15s;
+            display: block;
+            background: none;
+            border: none;
+        }
+        .tgn-topnav-link.active, .tgn-topnav-link:focus, .tgn-topnav-link:hover {
+            background: #183661;
+            color: #fff;
+            text-decoration: none;
+        }
+        .tgn-topnav-link.disabled {
+            color: #b0b8c1 !important;
+            pointer-events: none;
+            background: none;
+        }
+        .side-toggle-btn {
+            display: block;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #fff;
+            cursor: pointer;
+            z-index: 1100;
+            margin-right: 0.5rem;
+        }
+        .side-nav {
+            width: 220px;
+            background: #f8f9fa;
+            border-right: 1px solid #ececec;
+            padding: 2rem 1rem 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            min-height: calc(100vh - 70px);
+            margin-top: 0;
+            flex-shrink: 0;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            z-index: 1050;
+            height: calc(100vh - 70px);
+            box-shadow: 2px 0 8px rgba(0,0,0,0.04);
+            transform: translateX(-100%);
+            transition: transform 0.2s;
+        }
+        .side-nav.open {
+            transform: translateX(0) !important;
+        }
+        .side-link {
+            font-size: 1.1rem;
+            color: #232526;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.5rem 0.8rem;
+            border-radius: 0.4rem;
+            transition: background 0.15s;
+            display: block;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 0;
+        }
+        .side-link:last-child {
+            border-bottom: none;
+        }
+        .side-link:hover, .side-link.active {
+            background: #e6e6e6;
+            color: #181818;
+        }
+        .pagination {
+            font-family: 'Cinzel', serif;
+            font-size: 0.95rem;
+        }
+        .pagination .page-link {
+            padding: 0.25rem 0.7rem;
+            font-size: 0.95rem;
+            border-radius: 0.2rem;
+            color: #0a2342;
+            border: 1px solid #e0e0e0;
+            background: #fff;
+            transition: background 0.15s;
+        }
+        .pagination .page-link:hover,
+        .pagination .page-item.active .page-link {
+            background: #e6e6e6;
+            color: #0a2342;
+            border-color: #b0b8c1;
+        }
+        .pagination .page-item.disabled .page-link {
+            color: #b0b8c1;
+            background: #f8f9fa;
+            border-color: #e0e0e0;
+        }
+        @media (max-width: 900px) {
+            .tgn-topnav-links {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            .side-nav {
+                /* already fixed/overlay, keep as is */
+            }
+            .side-nav.open {
+                /* already handled */
+            }
+            .side-nav-overlay {
+                display: none;
+                position: fixed;
+                top: 70px;
+                left: 0;
+                width: 100vw;
+                height: calc(100vh - 70px);
+                background: rgba(0,0,0,0.15);
+                z-index: 1049;
+            }
+            .side-nav-overlay.active {
+                display: block;
+            }
+            .main-content-with-sidebar {
+                margin-left: 0 !important;
+                padding: 1rem 0.5rem;
+                margin-top: 0;
+                transition: none;
+                align-items: stretch;
+                max-width: 100vw;
+            }
+        }
+        .layout-flex {
+            display: flex;
+            flex-direction: row;
+            min-height: calc(100vh - 70px);
+            position: relative;
+        }
+        .main-content-with-sidebar {
+            flex: 1 1 0;
+            padding: 1rem 2.5vw;
+            min-width: 0;
+            margin-top: 0;
+            transition: margin-left 0.2s;
+            margin-left: 220px;
+            margin-right: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+            max-width: calc(100vw - 440px);
+        }
+        @media (max-width: 1200px) {
+            .main-content-with-sidebar {
+                padding: 1rem 1vw;
+                max-width: 100vw;
+            }
+        }
+        @media (max-width: 900px) {
+            .main-content-with-sidebar {
+                margin-left: 0 !important;
+                padding: 1rem 0.5rem;
+                margin-top: 0;
+                transition: none;
+                align-items: stretch;
+                max-width: 100vw;
+            }
+        }
+        .btn-navy {
+            background: #0a2342 !important;
+            color: #fff !important;
+            border-color: #0a2342 !important;
+        }
+        .btn-navy:hover, .btn-navy:focus {
+            background: #183661 !important;
+            color: #fff !important;
+            border-color: #183661 !important;
+        }
+        .btn-outline-success, .btn-outline-success:focus, .btn-outline-success:active {
+            border-color: darkblue !important;
+            color: darkblue !important;
+            background: transparent !important;
+        }
+        .btn-outline-success:hover {
+            background: darkblue !important;
+            color: #fff !important;
+            border-color: darkblue !important;
+        }
+        .btn-outline-dark, .btn-dark {
+            opacity: 1 !important;
+            visibility: visible !important;
+            display: inline-block !important;
+        }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body style="background:#fff;">
+    <header class="tgn-header">
+        <div class="d-flex align-items-center w-100">
+            <span class="tgn-logo" style="margin-left:1rem;">TGN</span>
+            <nav class="tgn-topnav-links mx-auto">
+                <button type="button" class="side-toggle-btn" id="sideToggleBtn" aria-label="Menüyü Aç/Kapat">&#9776;</button>
+                <a href="{{ url_for('main') }}" class="tgn-topnav-link {% if request.endpoint == 'main' %}active{% endif %}">Son Dakika</a>
+                <a href="{{ url_for('international') }}" class="tgn-topnav-link {% if request.endpoint == 'international' %}active{% endif %}">Uluslararası Haberler</a>
+                <a href="{{ url_for('foreign_turkey') }}" class="tgn-topnav-link {% if request.endpoint == 'foreign_turkey' %}active{% endif %}">Dış Perspektif</a>
+                <a href="{{ url_for('ekonomi') }}" class="tgn-topnav-link {% if request.endpoint == 'ekonomi' %}active{% endif %}">Ekonomi</a>
+                <a href="{{ url_for('spor') }}" class="tgn-topnav-link {% if request.endpoint == 'spor' %}active{% endif %}">Spor</a>
+                <a href="{{ url_for('saglik') }}" class="tgn-topnav-link {% if request.endpoint == 'saglik' %}active{% endif %}">Sağlık</a>
+                <a href="{{ url_for('teknoloji') }}" class="tgn-topnav-link {% if request.endpoint == 'teknoloji' %}active{% endif %}">Teknoloji</a>
+                <a href="{{ url_for('siyaset') }}" class="tgn-topnav-link {% if request.endpoint == 'siyaset' %}active{% endif %}">Siyaset</a>
+            </nav>
+        </div>
+        <div class="tgn-actions">
+            {% if session.get('email') %}
+                <div class="dropdown">
+                    <button class="btn btn-dark dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user"></i> {{ session['first_name'] }}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                        <li><a class="dropdown-item" href="{{ url_for('account') }}">Hesap Bilgileri</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('logout') }}">Çıkış Yap</a></li>
+                    </ul>
+                </div>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="btn btn-outline-dark btn-sm me-2" style="display:inline-block;">Giriş Yap</a>
+                <a href="{{ url_for('register') }}" class="btn btn-dark btn-sm" style="display:inline-block;">Üye Ol</a>
+            {% endif %}
+        </div>
+    </header>
+    <div class="side-nav-overlay" id="sideNavOverlay"></div>
+    <div class="layout-flex" id="layoutFlex">
+        <nav class="side-nav" id="sideNav">
+            <a href="{{ url_for('main') }}" class="side-link {% if request.endpoint == 'main' %}active{% endif %}">Yerel Haberler</a>
+            <a href="{{ url_for('international') }}" class="side-link {% if request.endpoint == 'international' %}active{% endif %}">Uluslararası Haberler</a>
+            {% if session.get('email') %}
+            <a href="{{ url_for('arsiv') }}" class="side-link {% if request.endpoint == 'arsiv' %}active{% endif %}">Arşiv</a>
+            {% endif %}
+        </nav>
+        <main class="main-content-with-sidebar">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    {% block scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sideToggleBtn = document.getElementById('sideToggleBtn');
+            const sideNav = document.getElementById('sideNav');
+            const sideNavOverlay = document.getElementById('sideNavOverlay');
+            const layoutFlex = document.getElementById('layoutFlex');
+            function closeSideNav() {
+                sideNav.classList.remove('open');
+                sideNavOverlay.classList.remove('active');
+                if(layoutFlex) layoutFlex.classList.remove('side-nav-open');
+            }
+            function openSideNav() {
+                sideNav.classList.add('open');
+                sideNavOverlay.classList.add('active');
+                if(layoutFlex) layoutFlex.classList.add('side-nav-open');
+            }
+            if (sideToggleBtn) {
+                sideToggleBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    if (sideNav.classList.contains('open')) {
+                        closeSideNav();
+                    } else {
+                        openSideNav();
+                    }
+                });
+            }
+            if (sideNavOverlay) {
+                sideNavOverlay.addEventListener('click', closeSideNav);
+            }
+            document.querySelectorAll('#sideNav .side-link').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    closeSideNav();
+                });
+            });
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 900) closeSideNav();
+            });
+            document.addEventListener('click', function(e) {
+                if (sideNav.classList.contains('open')) {
+                    if (!sideNav.contains(e.target) && e.target !== sideToggleBtn) {
+                        closeSideNav();
+                    }
+                }
+            });
+        });
+    </script>
+    {% endblock %}
+</body>
+</html>
